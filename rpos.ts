@@ -59,4 +59,4 @@ let discovery_service = new DiscoveryService(config);
 
 device_service.start();
 media_service.start();
-discovery_service.start();
+//discovery_service.start();

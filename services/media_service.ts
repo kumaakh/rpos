@@ -171,10 +171,18 @@ class MediaService extends SoapService {
     var profile = {
       Name: "CurrentProfile",
       attributes: {
-        token: "token"
+        token: "token",
+        fixed:true
       },
       VideoSourceConfiguration: videoSourceConfiguration,
       VideoEncoderConfiguration: videoEncoderConfiguration
+    };
+    var created_profile = {
+      Name: "NewProfile",
+      attributes: {
+        token: "token",
+        fixed:false
+      }
     };
 
     port.GetServiceCapabilities = (args /*, cb, headers*/) => {
@@ -240,7 +248,7 @@ class MediaService extends SoapService {
     };
 
     port.CreateProfile = (args) => {
-      var CreateProfileResponse = { Profile: profile };
+      var CreateProfileResponse = { Profile: created_profile };
       return CreateProfileResponse;
     };
 

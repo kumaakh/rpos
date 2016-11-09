@@ -36,7 +36,7 @@ class Camera {
   settings: CameraSettingsBase = {
     forceGop: true,
     resolution: <Resolution>{ Width: 1280, Height: 720 },
-    framerate: 25,
+    framerate: 30,
   }
   
   config: rposConfig;

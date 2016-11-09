@@ -1,18 +1,18 @@
 ﻿{
-  "NetworkAdapters" : ["awdl0","eth0", "en0"], 
+  "NetworkAdapters" : ["Ethernet"], 
   "IpAddress" : "10.102.10.174",
   "ServicePort" : 8081,
   "RTSPPort" : 5544,
-  "RTSPName" : "production",
+  "RTSPName" : "vod/leman.mp4",
   "MulticastEnabled"  : false,
   "RTSPMulticastName" : "h264m",
   "MulticastAddress"  : "224.0.0.1",
   "MulticastPort"     : "10001",
-  "RTSPServer" : 1, "RtspServerComment" : "## Select RTSP Server > 1:RPOS RTSP Server 2:V4L2 RTSP Server by mpromonet (auto selected if MulticastEnabled=true)",
+  "RTSPServer" : 1, "RtspServerComment" : "## Uses evo stream server to publish streams change RTSPName to select the right stream",
   "DeviceInformation" : {
-    "Manufacturer" : "Raspberry Pi",
-    "Model" : "2 B",
-    "HardwareId" : ""
+    "Manufacturer" : "Seastar Labs",
+    "Model" : "v1.0",
+    "HardwareId" : "123456"
   },
   "logLevel" : 4, "logLevelComment": "## LogLevels are > 1:Error 2:Warning 3:Info 4:Debug",
   "logSoapCalls" : true

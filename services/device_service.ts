@@ -29,7 +29,36 @@ class DeviceService extends SoapService {
 
   extendService() {
     var port = this.device_service.DeviceService.Device;
+    port.GetServices = (args /*, cb, headers*/) => {
+      var dService={
+          Namespace: "http://www.onvif.org/ver10/device/wsdl",
+          XAddr: port.GetCapabilities({Category:"Device"}).Capabilities["Device"].XAddr
+      };
+      if(args.IncludeCapability)
+        dService["Capabilities"]=port.GetServiceCapabilities();
+      
+      dService["Version"]={Major : 2,Minor : 42};
+      
+      var mService={
+          Namespace: "http://www.onvif.org/ver10/media/wsdl",
+          XAddr: port.GetCapabilities({Category:"Media"}).Capabilities["Media"].XAddr
+      };
+ //     if(args.IncludeCapability)
+ //       mService["Capabilities"]= {
+ //         "Capabilities":{
+//            attributes : {
+//              SnapshotUri : false,
+//              Rotation : false,
+//              VideoSourceMode : true,
+//              OSD : false
+//          }
+//        }
+//      }
 
+      var GetServicesResponse={Service:[dService]};
+      
+      return GetServicesResponse;
+    };
     port.GetDeviceInformation = (args /*, cb, headers*/) => {
       var GetDeviceInformationResponse = {
         Manufacturer: this.config.DeviceInformation.Manufacturer,
@@ -288,14 +317,37 @@ class DeviceService extends SoapService {
       var GetNetworkInterfacesResponse = {
         NetworkInterfaces: []
       };
+      //assume we have just one network interface which supports DHCP and IPv4
       var nwifs = os.networkInterfaces();
-      for (var nwif in nwifs) {
-        GetNetworkInterfacesResponse.NetworkInterfaces.push({
-          attributes: {
-            token: nwif
-          }
-        });
+      var ethName=this.config.NetworkAdapters[0];
+      var eth=nwifs[ethName];
+      var eth_IPV4;
+      for(var i=0;i<eth.length;i++)
+      {
+            if(eth[i].family=="IPv4")
+              eth_IPV4=eth[i];
       }
+      GetNetworkInterfacesResponse.NetworkInterfaces.push({
+        attributes: {
+          token: ethName
+        },
+        Enabled: true,
+        Info: {
+          Name: ethName,
+          HwAddress: eth_IPV4.mac,
+          MTU: 1500
+        },
+        IPv4: {
+          Enabled: true,
+          Config: {
+            FromDHCP: {
+              Address: eth_IPV4.address,
+              PrefixLength: 24
+            },
+            DHCP: true
+          }
+        }
+      });
       return GetNetworkInterfacesResponse;
     };
 

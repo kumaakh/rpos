@@ -106,7 +106,7 @@ class DiscoveryService {
       });
     });
 
-    discover_socket.bind(3702, '239.255.255.250', () => {
+    discover_socket.bind(3702, '0.0.0.0', () => {
       discover_socket.addMembership('239.255.255.250');
     });
 

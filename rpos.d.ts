@@ -10,9 +10,20 @@ interface rposConfig {
   RTSPMulticastName : string;
   MulticastAddress: string;
   MulticastPort: number;
+  PTZDriver: string;
+  PTZSerialPort: string;
+  PTZSerialPortSettings: PTZSerialPortSettings;
+  PTZCameraAddress: number;
   DeviceInformation: DeviceInformation;
   logLevel: number;
   logSoapCalls: Boolean;
+}
+
+interface PTZSerialPortSettings {
+  baudRate: number;
+  dataBits: number;
+  parity: string;
+  stopBits: number;
 }
 
 interface DeviceInformation {

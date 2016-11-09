@@ -7,14 +7,18 @@ import os = require('os');
 import SoapService = require('../lib/SoapService');
 import { Utils }  from '../lib/utils';
 import { Server } from 'http';
+import ip = require('ip');
 var utils = Utils.utils;
 
 class DeviceService extends SoapService {
   device_service: any;
-  constructor(config: rposConfig, server: Server) {
+  callback: any;
+
+  constructor(config: rposConfig, server: Server, callback) {
     super(config, server);
 
     this.device_service = require('./stubs/device_service.js').DeviceService;
+    this.callback = callback;
 
     this.serviceOptions = {
       path: '/onvif/device_service',
@@ -74,6 +78,11 @@ class DeviceService extends SoapService {
       return GetSystemDateAndTimeResponse;
     };
 
+    port.SetSystemDateAndTime = (args /*, cb, headers*/) => {
+      var SetSystemDateAndTimeResponse = {};
+      return SetSystemDateAndTimeResponse;
+    };
+
     port.SystemReboot = (args /*, cb, headers*/) => {
       var SystemRebootResponse = {
         Message: utils.execSync("sudo reboot")
@@ -122,7 +131,7 @@ class DeviceService extends SoapService {
           },
           IO: {
             InputConnectors: 0,
-            RelayOutputs: 0,
+            RelayOutputs: 1,
             Extension: {
               Auxiliary: false,
               AuxiliaryCommands: "",
@@ -149,6 +158,14 @@ class DeviceService extends SoapService {
           Extension: {}
         };
       }
+      if (category == "All" || category == "Events") {
+        GetCapabilitiesResponse.Capabilities["Events"] = {
+          XAddr: `http://${utils.getIpAddress() }:${this.config.ServicePort}/onvif/events_service`,
+          WSSubscriptionPolicySupport: false,
+          WSPullPointSupport: false,
+          WSPausableSubscriptionManagerInterfaceSupport: false
+        }
+      }
       if (category == "All" || category == "Media") {
         GetCapabilitiesResponse.Capabilities["Media"] = {
           XAddr: `http://${utils.getIpAddress() }:${this.config.ServicePort}/onvif/media_service`,
@@ -163,6 +180,11 @@ class DeviceService extends SoapService {
               MaximumNumberOfProfiles: 1
             }
           }
+        }
+      }
+      if (category == "All" || category == "PTZ") {
+        GetCapabilitiesResponse.Capabilities["PTZ"] = {
+          XAddr: `http://${utils.getIpAddress() }:${this.config.ServicePort}/onvif/ptz_service`
         }
       }
       return GetCapabilitiesResponse;
@@ -290,11 +312,35 @@ class DeviceService extends SoapService {
       };
       var nwifs = os.networkInterfaces();
       for (var nwif in nwifs) {
-        GetNetworkInterfacesResponse.NetworkInterfaces.push({
-          attributes: {
-            token: nwif
+        for (var addr in nwifs[nwif]) {
+           if (nwifs[nwif][addr].family === 'IPv4' ) {
+            var mac = (nwifs[nwif][addr].mac).replace(/:/g,'-');
+            var ipv4_addr = nwifs[nwif][addr].address;
+            var netmask = nwifs[nwif][addr].netmask;
+            var prefix_len = ip.subnet(ipv4_addr,netmask).subnetMaskLength;
+            GetNetworkInterfacesResponse.NetworkInterfaces.push({
+              attributes: {
+                token: nwif
+              },
+              Enabled: true,
+              Info: {
+                Name: nwif,
+                HwAddress: mac,
+                MTU: 1500
+              },
+              IPv4: {
+                Enabled: true,
+                Config: {
+                   Manual: {
+                     Address: ipv4_addr,
+                     PrefixLength: prefix_len
+                   },
+                   DHCP: false
+                }
+              }
+            });
           }
-        });
+        }
       }
       return GetNetworkInterfacesResponse;
     };
@@ -311,9 +357,31 @@ class DeviceService extends SoapService {
     };
 
     port.GetRelayOutputs = (args /*, cb, headers*/) => {
-      var GetRelayOutputsResponse = {};
+      var GetRelayOutputsResponse = {
+        RelayOutputs: [{
+          attributes: {
+            token: "relay1"
+          },
+          Properties : {
+            Mode: "Bistable",
+            // DelayTime: "",
+            IdleState: "open"
+          }
+        }]
+      };
       return GetRelayOutputsResponse;
     };
+
+    port.SetRelayOutputState = (args /*, cb, headers*/) => {
+      var SetRelayOutputStateResponse = {};
+      if (this.callback) {
+        if (args.LogicalState === 'active') this.callback('relayactive', { name: args.RelayOutputToken });
+        if (args.LogicalState === 'inactive') this.callback('relayinactive', { name: args.RelayOutputToken });
+      }
+      return SetRelayOutputStateResponse;
+    };
+
+
   }
 }
 export = DeviceService;

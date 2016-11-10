@@ -57,7 +57,7 @@ let camera = new Camera(config, webserver);
 let device_service = new DeviceService(config, httpserver, ptz_callback);
 let media_service = new MediaService(config, httpserver, camera);
 let ptz_service = new PTZService(config, httpserver, ptz_callback);
-let discovery_service = new DiscoveryService(config);
+// let discovery_service = new DiscoveryService(config);
 
 device_service.start();
 media_service.start();

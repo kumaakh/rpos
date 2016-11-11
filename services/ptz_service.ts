@@ -74,13 +74,7 @@ class PTZService extends SoapService {
       'AUX3on','AUX3off','AUX4on','AUX4off',
       'AUX5on','AUX5off','AUX6on','AUX6off',
       'AUX7on','AUX7off','AUX8on','AUX8off'],
-      env: '',
-      ter: ''
     };
-
-    var node2 = node;
-    node2.env = "Sender";
-    node2.ter = "InvalidArgVal";
 
     var config = { 
             attributes : {
@@ -269,6 +263,7 @@ class PTZService extends SoapService {
     };
 
     port.GetNodes = (args) => {
+      console.log("Args are ", args);
       var GetNodesResponse = { PTZNode: node };
       return GetNodesResponse;
     };

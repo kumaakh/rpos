@@ -67,6 +67,20 @@ class PTZService extends SoapService {
             Max : 1.0
           }
         }],
+        PanTiltSpeedSpace : [{ 
+          URI : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace',
+          XRange : { 
+            Min : 0.0,
+            Max : 1.0
+          }
+        }],
+        ZoomSpeedSpace : [{ 
+          URI : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace',
+          XRange : { 
+            Min : 0.0,
+            Max : 1.0
+          }
+        }],
       },
       MaximumNumberOfPresets : 255,
       HomeSupported : true,
@@ -195,12 +209,27 @@ class PTZService extends SoapService {
                 }
               }],
               ContinuousZoomVelocitySpace : [{ 
-                URI : 'http://www.onvif.org/ver10/tptz/ZoomTiltSpaces/VelocityGenericSpace',
+                URI : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace',
                 XRange : { 
                   Min : 0.33,
                   Max : 1.0
                 }
               }],
+              PanTiltSpeedSpace : [{ 
+                URI : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace',
+                XRange : { 
+                  Min : 0.0,
+                  Max : 1.0
+                },
+              }],
+              ZoomSpeedSpace : [{ 
+                URI : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace',
+                XRange : { 
+                  Min : 0.0,
+                  Max : 1.0
+                },
+              }],
+                            
               // PanTiltSpeedSpace : [{ 
               //   URI : { xs:anyURI},
               //   XRange : { 
@@ -261,7 +290,6 @@ class PTZService extends SoapService {
     };
 
     port.GetNodes = (args) => {
-      console.log("Args are ", args);
       var GetNodesResponse = { PTZNode: node };
       return GetNodesResponse;
     };
@@ -272,6 +300,7 @@ class PTZService extends SoapService {
     };
 
     port.GetConfiguration = (args) => {
+      console.log("Sending configuration", config)
       var GetConfigurationResponse = { PTZConfiguration : config };
       return GetConfigurationResponse;
     };
@@ -465,6 +494,15 @@ class PTZService extends SoapService {
       }
     };
 
+    port.SetConfiguration = args => {
+      var SetConfigurationResponse = {};
+      if (config.DefaultPTZTimeout === 'P0Y0M0DT1H') {
+        config.DefaultPTZTimeout = 'P0Y0M0DT0H5M';
+      } else {
+        config.DefaultPTZTimeout = 'P0Y0M0DT1H';
+      }
+      return SetConfigurationResponse;
+    };
   }
 }
 export = PTZService;

@@ -73,12 +73,38 @@ class PTZService extends SoapService {
       AuxiliaryCommands : ['AUX1on','AUX1off','AUX2on','AUX2off',
       'AUX3on','AUX3off','AUX4on','AUX4off',
       'AUX5on','AUX5off','AUX6on','AUX6off',
-      'AUX7on','AUX7off','AUX8on','AUX8off']
-    }
+      'AUX7on','AUX7off','AUX8on','AUX8off'],
+      env: '',
+      ter: ''
+    };
+
+    var node2 = node;
+    node2.env = "Sender";
+    node2.ter = "InvalidArgVal";
 
     port.GetNode = (args) => {
-      var GetNodeResponse = { PTZNode: node };
-      return GetNodeResponse;
+      if (args.NodeToken == node.attributes.token) {
+        var GetNodeResponse = { PTZNode: node };
+        return GetNodeResponse;
+      } else {
+        var NOT_IMPLEMENTED = {
+          Fault: {
+            Code: {
+              Value: "soap:Sender",
+              Subcode: { 
+                Value: "ter:InvalidArgVal",
+                Subcode: { 
+                  Value: "ter:NoEntity",
+                }
+              }
+            },
+            Reason: {
+              Text: "Invalid Token"
+            }
+          }
+        };
+         throw NOT_IMPLEMENTED;
+      }
     };
 
     port.GetNodes = (args) => {
@@ -248,6 +274,7 @@ class PTZService extends SoapService {
         }
       }
     };
+
   }
 }
 export = PTZService;

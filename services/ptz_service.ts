@@ -142,100 +142,98 @@ class PTZService extends SoapService {
             }
         }
 
-      // var configOptions = { 
-      //     PTZConfigurationOptions : { 
-      //       attributes : {
-      //         PTZRamps : {tt:IntAttrList}
-      //       },
-      //       Spaces : { 
-      //         AbsolutePanTiltPositionSpace : [{ 
-      //           URI : { xs:anyURI},
-      //           XRange : { 
-      //             Min : { xs:float},
-      //             Max : { xs:float}
-      //           },
-      //           YRange : { 
-      //             Min : { xs:float},
-      //             Max : { xs:float}
-      //           }
-      //         }],
-      //         AbsoluteZoomPositionSpace : [{ 
-      //           URI : { xs:anyURI},
-      //           XRange : { 
-      //             Min : { xs:float},
-      //             Max : { xs:float}
-      //           }
-      //         }],
-      //         RelativePanTiltTranslationSpace : [{ 
-      //           URI : { xs:anyURI},
-      //           XRange : { 
-      //             Min : { xs:float},
-      //             Max : { xs:float}
-      //           },
-      //           YRange : { 
-      //             Min : { xs:float},
-      //             Max : { xs:float}
-      //           }
-      //         }],
-      //         RelativeZoomTranslationSpace : [{ 
-      //           URI : { xs:anyURI},
-      //           XRange : { 
-      //             Min : { xs:float},
-      //             Max : { xs:float}
-      //           }
-      //         }],
-      //         ContinuousPanTiltVelocitySpace : [{ 
-      //           URI : { xs:anyURI},
-      //           XRange : { 
-      //             Min : { xs:float},
-      //             Max : { xs:float}
-      //           },
-      //           YRange : { 
-      //             Min : { xs:float},
-      //             Max : { xs:float}
-      //           }
-      //         }],
-      //         ContinuousZoomVelocitySpace : [{ 
-      //           URI : { xs:anyURI},
-      //           XRange : { 
-      //             Min : { xs:float},
-      //             Max : { xs:float}
-      //           }
-      //         }],
-      //         PanTiltSpeedSpace : [{ 
-      //           URI : { xs:anyURI},
-      //           XRange : { 
-      //             Min : { xs:float},
-      //             Max : { xs:float}
-      //           }
-      //         }],
-      //         ZoomSpeedSpace : [{ 
-      //           URI : { xs:anyURI},
-      //           XRange : { 
-      //             Min : { xs:float},
-      //             Max : { xs:float}
-      //           }
-      //         }],
-      //         Extension : { }
-      //       },
-      //       PTZTimeout : { 
-      //         Min : { xs:duration},
-      //         Max : { xs:duration}
-      //       },
-      //       PTControlDirection : { 
-      //         EFlip : { 
-      //           Mode : [{ xs:string}],
-      //           Extension : { }
-      //         },
-      //         Reverse : { 
-      //           Mode : [{ xs:string}],
-      //           Extension : { }
-      //         },
-      //         Extension : { }
-      //       },
-      //       Extension : { }
-      //     }      
-      //   }
+      var configOption = { 
+            // attributes : {
+            //   PTZRamps : {tt:IntAttrList}
+            // },
+            Spaces : { 
+              // AbsolutePanTiltPositionSpace : [{ 
+              //   URI : { xs:anyURI},
+              //   XRange : { 
+              //     Min : { xs:float},
+              //     Max : { xs:float}
+              //   },
+              //   YRange : { 
+              //     Min : { xs:float},
+              //     Max : { xs:float}
+              //   }
+              // }],
+              // AbsoluteZoomPositionSpace : [{ 
+              //   URI : { xs:anyURI},
+              //   XRange : { 
+              //     Min : { xs:float},
+              //     Max : { xs:float}
+              //   }
+              // }],
+              // RelativePanTiltTranslationSpace : [{ 
+              //   URI : { xs:anyURI},
+              //   XRange : { 
+              //     Min : { xs:float},
+              //     Max : { xs:float}
+              //   },
+              //   YRange : { 
+              //     Min : { xs:float},
+              //     Max : { xs:float}
+              //   }
+              // }],
+              // RelativeZoomTranslationSpace : [{ 
+              //   URI : { xs:anyURI},
+              //   XRange : { 
+              //     Min : { xs:float},
+              //     Max : { xs:float}
+              //   }
+              // }],
+              ContinuousPanTiltVelocitySpace : [{ 
+                URI : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace',
+                XRange : { 
+                  Min : -1.0,
+                  Max : 1.0
+                },
+                YRange : { 
+                  Min : -1.0,
+                  Max : 1.0
+                }
+              }],
+              ContinuousZoomVelocitySpace : [{ 
+                URI : 'http://www.onvif.org/ver10/tptz/ZoomTiltSpaces/VelocityGenericSpace',
+                XRange : { 
+                  Min : 0.33,
+                  Max : 1.0
+                }
+              }],
+              // PanTiltSpeedSpace : [{ 
+              //   URI : { xs:anyURI},
+              //   XRange : { 
+              //     Min : { xs:float},
+              //     Max : { xs:float}
+              //   }
+              // }],
+              // ZoomSpeedSpace : [{ 
+              //   URI : { xs:anyURI},
+              //   XRange : { 
+              //     Min : { xs:float},
+              //     Max : { xs:float}
+              //   }
+              // }],
+              Extension : { }
+            },
+            PTZTimeout : { 
+              Min : 'P0Y0M0DT0H5M',
+              Max : 'P0Y0M0DT1H'
+            },
+            PTControlDirection : { 
+              EFlip : { 
+                Mode : [''],
+                Extension : { }
+              },
+              Reverse : { 
+                Mode : [''],
+                Extension : { }
+              },
+              Extension : { }
+            },
+            Extension : { }
+        }
 
     port.GetNode = (args) => {
       if (args.NodeToken == node.attributes.token) {
@@ -278,6 +276,30 @@ class PTZService extends SoapService {
       return GetConfigurationResponse;
     };
 
+    port.GetConfigurationOptions = (args) => {
+      if (args.ConfigurationToken == config.attributes.token) {
+        var GetConfigurationOptionsResponse = { PTZConfigurationOptions: configOption };
+        return GetConfigurationOptionsResponse;
+      } else {
+        var NOT_IMPLEMENTED = {
+          Fault: {
+            Code: {
+              Value: "soap:Sender",
+              Subcode: { 
+                Value: "ter:InvalidArgVal",
+                Subcode: { 
+                  Value: "ter:NoEntity",
+                }
+              }
+            },
+            Reason: {
+              Text: "Invalid Token"
+            }
+          }
+        };
+         throw NOT_IMPLEMENTED;
+      }
+    };
 
 
     port.SetHomePosition = (args) => {

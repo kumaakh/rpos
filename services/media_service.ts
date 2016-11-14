@@ -8,6 +8,7 @@ import url = require('url');
 import { Server } from 'http';
 import Camera = require('../lib/camera');
 import { v4l2ctl } from '../lib/v4l2ctl';
+var json = require('../config/config.json');
 var utils = Utils.utils;
 
 class MediaService extends SoapService {
@@ -168,32 +169,7 @@ class MediaService extends SoapService {
       Options: []
     };
 
-    var ptzConfiguration = {
-      attributes: {
-        token: "ptz_config_token_0"
-      },
-      Name: "PTZ Configuration",
-      UseCount: 1,
-      NodeToken: "ptz_node_token_0",
-      DefaultContinuousPanTiltVelocitySpace : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace',
-      DefaultContinuousZoomVelocitySpace : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace',
-      DefaultPTZSpeed : { 
-        PanTilt : { 
-          attributes : {
-            x : 1.0,
-            y : 1.0,
-            space : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace'
-          }
-        },
-        Zoom : { 
-          attributes : {
-            x : 1,
-            space : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace'
-          }
-        }
-      },
-      DefaultPTZTimeout : 'PT5S'
-    }
+    var ptzConfiguration = json.ptzconfig;
 
     var profile = {
       Name: "CurrentProfile",

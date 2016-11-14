@@ -7,6 +7,8 @@ import os = require('os');
 import SoapService = require('../lib/SoapService');
 import { Utils }  from '../lib/utils';
 import { Server } from 'http';
+import MediaService = require('./media_service');
+var json = require('../config/config.json');
 
 var utils = Utils.utils;
 
@@ -36,9 +38,6 @@ class PTZService extends SoapService {
 
     this.extendService();
   }
-
-
-
 
   extendService() {
     var port = this.ptz_service.PTZService.PTZ;
@@ -90,71 +89,73 @@ class PTZService extends SoapService {
       'AUX7on','AUX7off','AUX8on','AUX8off'],
     };
 
-    var config = { 
-            attributes : {
-              token : 'ptz_config_token_1'
-            },
+    // var config = { 
+    //         attributes : {
+    //           token : 'ptz_config_token_0'
+    //         },
 
-            Name : 'PTZConfig_1',
-            UseCount : 0,
-            NodeToken : 'ptz_node_token_0',
-            // DefaultAbsolutePantTiltPositionSpace : '',
-            // DefaultAbsoluteZoomPositionSpace : '',
-            // DefaultRelativePanTiltTranslationSpace : '',
-            // DefaultRelativeZoomTranslationSpace : '',
-            DefaultContinuousPanTiltVelocitySpace : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace',
-            DefaultContinuousZoomVelocitySpace : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace',
-            DefaultPTZSpeed : { 
-              PanTilt : { 
-                attributes : {
-                  x : 0.05,
-                  y : 0.05,
-                  space : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace'
-                }
-              },
-              Zoom : { 
-                attributes : {
-                  x : 0.07,
-                  space : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace'
-                }
-              }
-            },
-            DefaultPTZTimeout : 'P0Y0M0DT1H',
-            PanTiltLimits : { 
-              Range : { 
-                URI : '',
-                XRange : { 
-                  Min : -1.0,
-                  Max : 1.0
-                },
-                YRange : { 
-                  Min : -1.0,
-                  Max : 1.0
-                }
-              }
-            },
-            ZoomLimits : { 
-              Range : { 
-                URI : '',
-                XRange : { 
-                  Min : 0.33,
-                  Max : 1
-                }
-              }
-            },
-            Extension : { 
-              PTControlDirection : { 
-                EFlip : { 
-                  Mode : 'OFF'
-                },
-                Reverse : { 
-                  Mode : 'OFF'
-                },
-                Extension : { }
-              },
-              Extension : { }
-            }
-        }
+    //         Name : 'PTZConfig_1',
+    //         UseCount : 0,
+    //         NodeToken : 'ptz_node_token_0',
+    //         // DefaultAbsolutePantTiltPositionSpace : '',
+    //         // DefaultAbsoluteZoomPositionSpace : '',
+    //         // DefaultRelativePanTiltTranslationSpace : '',
+    //         // DefaultRelativeZoomTranslationSpace : '',
+    //         DefaultContinuousPanTiltVelocitySpace : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace',
+    //         DefaultContinuousZoomVelocitySpace : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace',
+    //         DefaultPTZSpeed : { 
+    //           PanTilt : { 
+    //             attributes : {
+    //               x : 0.05,
+    //               y : 0.05,
+    //               space : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace'
+    //             }
+    //           },
+    //           Zoom : { 
+    //             attributes : {
+    //               x : 0.07,
+    //               space : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace'
+    //             }
+    //           }
+    //         },
+    //         DefaultPTZTimeout : 'P0Y0M0DT1H',
+    //         PanTiltLimits : { 
+    //           Range : { 
+    //             URI : '',
+    //             XRange : { 
+    //               Min : -1.0,
+    //               Max : 1.0
+    //             },
+    //             YRange : { 
+    //               Min : -1.0,
+    //               Max : 1.0
+    //             }
+    //           }
+    //         },
+    //         ZoomLimits : { 
+    //           Range : { 
+    //             URI : '',
+    //             XRange : { 
+    //               Min : 0.33,
+    //               Max : 1
+    //             }
+    //           }
+    //         },
+    //         Extension : { 
+    //           PTControlDirection : { 
+    //             EFlip : { 
+    //               Mode : 'OFF'
+    //             },
+    //             Reverse : { 
+    //               Mode : 'OFF'
+    //             },
+    //             Extension : { }
+    //           },
+    //           Extension : { }
+    //         }
+    //     };
+
+      var config = json.ptzconfig;
 
       var configOption = { 
             // attributes : {
@@ -247,7 +248,7 @@ class PTZService extends SoapService {
               Extension : { }
             },
             PTZTimeout : { 
-              Min : 'P0Y0M0DT0H5M',
+              Min : 'PT5S',
               Max : 'P0Y0M0DT1H'
             },
             PTControlDirection : { 
@@ -519,6 +520,33 @@ class PTZService extends SoapService {
       }     
     };
 
+    port.SendAuxiliaryCommand = args => {
+      console.log(node.attributes.token, args.ProfileToken);
+      if (args.ProfileToken === node.attributes.token) {
+        var SendAuxiliaryCommandResponse = {attributes: {
+          AuxiliaryResponse: "Done"}
+        };
+        return SendAuxiliaryCommandResponse;
+      } else {
+        var FAULT = {
+          Fault: {
+            Code: {
+              Value: "soap:Sender",
+              Subcode: { 
+                Value: "ter:InvalidArgVal",
+                Subcode: { 
+                  Value: "ter:NoProfile",
+                }
+              }
+            },
+            Reason: {
+              Text: "Invalid Token"
+            }
+          }
+        };
+         throw FAULT;
+      }
+    };
     
   }
 }

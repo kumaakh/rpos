@@ -10,7 +10,6 @@ var gulp = require('gulp'),
 
 const spawn = require('child_process').spawn;
 
-console.log(ip.isV4Format("10.1.1.0"));
 var version = 'rpos-' + pkg.version;
 var releaseDir = 'release/' + version;
 

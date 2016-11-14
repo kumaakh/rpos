@@ -8,9 +8,21 @@ var gulp = require('gulp'),
     sourcemaps = require('gulp-sourcemaps'),
     ip = require('ip');
 
+const spawn = require('child_process').spawn;
+
 console.log(ip.isV4Format("10.1.1.0"));
 var version = 'rpos-' + pkg.version;
 var releaseDir = 'release/' + version;
+
+// Run task: serve node server after calling default task compiling all the ts files; Use this.
+gulp.task('run', function(cb) {
+    runSequence('default', 'serve', cb);
+});
+
+// Serve task: serve node server by calling rpos.js
+gulp.task('serve', function(cb) {
+    spawn('node', ['rpos.js'], { stdio: 'inherit' });
+});
 
 //Default task: runs the typings and compile task, started when running "gulp" without any parameters.
 gulp.task('default', function(cb) {

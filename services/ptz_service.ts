@@ -300,7 +300,6 @@ class PTZService extends SoapService {
     };
 
     port.GetConfiguration = (args) => {
-      console.log("Sending configuration", config)
       var GetConfigurationResponse = { PTZConfiguration : config };
       return GetConfigurationResponse;
     };

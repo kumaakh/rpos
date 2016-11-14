@@ -495,13 +495,9 @@ class PTZService extends SoapService {
     };
 
     port.SetConfiguration = args => {
-      if (args.PTZConfiguration.attributes.token == config.attributes.token) {
+      if (args.PTZConfiguration.attributes.token === config.attributes.token) {
         var SetConfigurationResponse = {};
-        if (config.DefaultPTZTimeout === 'P0Y0M0DT1H') {
-          config.DefaultPTZTimeout = 'P0Y0M0DT0H5M';
-        } else {
-          config.DefaultPTZTimeout = 'P0Y0M0DT1H';
-        }
+        config.DefaultPTZTimeout = args.PTZConfiguration.DefaultPTZTimeout; 
         return SetConfigurationResponse;
       } else {
         var NOT_IMPLEMENTED = {

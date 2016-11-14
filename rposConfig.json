@@ -1,6 +1,6 @@
 ﻿{
     "NetworkAdapters": ["Ethernet"],
-    "IpAddress": "10.40.10.53",
+    "IpAddress": "10.40.10.150",
     "ServicePort": 8085,
     "RTSPPort": 5544,
     "RTSPName": "vod/leman.mp4",

@@ -25,7 +25,7 @@ class PTZService extends SoapService {
     this.callback = callback;
 
     this.configs = ptzBase
-    
+
     this.serviceOptions = {
       path: '/onvif/ptz_service',
       services: this.ptz_service,
@@ -34,8 +34,8 @@ class PTZService extends SoapService {
       onReady: () => console.log('ptz_service started')
     };
 
-    for (var i = 1; i <=  255; i++) {
-      this.presetArray.push({profileToken: 'token', presetName: '', presetToken: i.toString(), used: false});
+    for (var i = 1; i <= 255; i++) {
+      this.presetArray.push({ profileToken: 'token', presetName: '', presetToken: i.toString(), used: false });
     }
 
     this.extendService();
@@ -44,10 +44,12 @@ class PTZService extends SoapService {
   extendService() {
     var port = this.ptz_service.PTZService.PTZ;
 
-      var node = this.configs.node;
-      var config = this.configs.ptzconfig;
-      var configOption = this.configs.ptzconfigOption;
-    
+
+    // var config = json.ptzconfig;
+    var node = this.configs.node;
+    var config = this.configs.ptzconfig;
+    var configOption = this.configs.ptzconfigOption;
+
     port.GetNode = (args) => {
       if (args.NodeToken == node.attributes.token) {
         var GetNodeResponse = { PTZNode: node };
@@ -57,9 +59,9 @@ class PTZService extends SoapService {
           Fault: {
             Code: {
               Value: "soap:Sender",
-              Subcode: { 
+              Subcode: {
                 Value: "ter:InvalidArgVal",
-                Subcode: { 
+                Subcode: {
                   Value: "ter:NoEntity",
                 }
               }
@@ -69,7 +71,7 @@ class PTZService extends SoapService {
             }
           }
         };
-         throw NOT_IMPLEMENTED;
+        throw NOT_IMPLEMENTED;
       }
     };
 
@@ -79,12 +81,12 @@ class PTZService extends SoapService {
     };
 
     port.GetConfigurations = (args) => {
-      var GetConfigurationsResponse = { PTZConfiguration : config };
+      var GetConfigurationsResponse = { PTZConfiguration: config };
       return GetConfigurationsResponse;
     };
 
     port.GetConfiguration = (args) => {
-      var GetConfigurationResponse = { PTZConfiguration : config };
+      var GetConfigurationResponse = { PTZConfiguration: config };
       return GetConfigurationResponse;
     };
 
@@ -97,9 +99,9 @@ class PTZService extends SoapService {
           Fault: {
             Code: {
               Value: "soap:Sender",
-              Subcode: { 
+              Subcode: {
                 Value: "ter:InvalidArgVal",
-                Subcode: { 
+                Subcode: {
                   Value: "ter:NoEntity",
                 }
               }
@@ -109,20 +111,20 @@ class PTZService extends SoapService {
             }
           }
         };
-         throw NOT_IMPLEMENTED;
+        throw NOT_IMPLEMENTED;
       }
     };
 
 
     port.SetHomePosition = (args) => {
       if (this.callback) this.callback('sethome', {});
-      var SetHomePositionResponse = { };
+      var SetHomePositionResponse = {};
       return SetHomePositionResponse;
     };
 
     port.GotoHomePosition = (args) => {
       if (this.callback) this.callback('gotohome', {});
-      var GotoHomePositionResponse = { };
+      var GotoHomePositionResponse = {};
       return GotoHomePositionResponse;
     };
 
@@ -131,33 +133,33 @@ class PTZService extends SoapService {
     var zoom = 0;
     var timeout = '';
 
-    port.ContinuousMove = (args) =>  {
+    port.ContinuousMove = (args) => {
       // Update values or keep last known value
-      try {pan = args.Velocity.PanTilt.attributes.x} catch (err){}; 
-      try {tilt = args.Velocity.PanTilt.attributes.y} catch (err){}; 
-      try {zoom = args.Velocity.Zoom.attributes.x} catch (err){}; 
-      try {timeout = args.Timeout} catch (err){}; 
-      if (this.callback) this.callback('ptz', { pan: pan, tilt: tilt, zoom: zoom});
-      var ContinuousMoveResponse = { };
+      try { pan = args.Velocity.PanTilt.attributes.x } catch (err) { };
+      try { tilt = args.Velocity.PanTilt.attributes.y } catch (err) { };
+      try { zoom = args.Velocity.Zoom.attributes.x } catch (err) { };
+      try { timeout = args.Timeout } catch (err) { };
+      if (this.callback) this.callback('ptz', { pan: pan, tilt: tilt, zoom: zoom });
+      var ContinuousMoveResponse = {};
       return ContinuousMoveResponse;
     };
 
 
-    port.Stop = (args) =>  {
+    port.Stop = (args) => {
       // Update values (to zero) or keep last known value
       var pan_tilt_stop = false;
       var zoom_stop = false;
-      try {pan_tilt_stop = args.PanTilt} catch (err){}; 
-      try {zoom_stop = args.Zoom} catch (err){};
+      try { pan_tilt_stop = args.PanTilt } catch (err) { };
+      try { zoom_stop = args.Zoom } catch (err) { };
       if (pan_tilt_stop) {
         pan = 0;
         tilt = 0;
       }
       if (zoom_stop) {
         zoom = 0;
-      } 
-      if (this.callback) this.callback('ptz', { pan: pan, tilt: tilt, zoom: zoom});
-      var StopResponse = { };
+      }
+      if (this.callback) this.callback('ptz', { pan: pan, tilt: tilt, zoom: zoom });
+      var StopResponse = {};
       return StopResponse;
     };
 
@@ -167,9 +169,9 @@ class PTZService extends SoapService {
       var GetPresetsResponse = { Preset: [] };
       var matching_profileToken = args.ProfileToken;
 
-      for (var i = 0 ; i < this.presetArray.length; i++) {
+      for (var i = 0; i < this.presetArray.length; i++) {
         if (this.presetArray[i].profileToken === matching_profileToken
-        && this.presetArray[i].used == true) {
+          && this.presetArray[i].used == true) {
           var p = {
             attributes: {
               token: this.presetArray[i].presetToken
@@ -184,16 +186,18 @@ class PTZService extends SoapService {
 
 
     port.GotoPreset = (args) => {
-      var GotoPresetResponse = { };
+      var GotoPresetResponse = {};
       var matching_profileToken = args.ProfileToken;
       var matching_presetToken = args.PresetToken;
 
-      for (var i = 0 ; i < this.presetArray.length; i++) {
+      for (var i = 0; i < this.presetArray.length; i++) {
         if (matching_profileToken === this.presetArray[i].profileToken
-        && matching_presetToken === this.presetArray[i].presetToken
-        && this.presetArray[i].used == true) {
-          if (this.callback) this.callback('gotopreset', { name: this.presetArray[i].presetName,
-            value: this.presetArray[i].presetToken });
+          && matching_presetToken === this.presetArray[i].presetToken
+          && this.presetArray[i].used == true) {
+          if (this.callback) this.callback('gotopreset', {
+            name: this.presetArray[i].presetName,
+            value: this.presetArray[i].presetToken
+          });
           break;
         }
       }
@@ -201,17 +205,19 @@ class PTZService extends SoapService {
     };
 
     port.RemovePreset = (args) => {
-      var RemovePresetResponse = { };
+      var RemovePresetResponse = {};
 
       var matching_profileToken = args.ProfileToken;
       var matching_presetToken = args.PresetToken;
 
-      for (var i = 0 ; i < this.presetArray.length; i++) {
+      for (var i = 0; i < this.presetArray.length; i++) {
         if (matching_profileToken === this.presetArray[i].profileToken
-        && matching_presetToken === this.presetArray[i].presetToken) {
+          && matching_presetToken === this.presetArray[i].presetToken) {
           this.presetArray[i].used = false;
-          if (this.callback) this.callback('clearpreset', { name: this.presetArray[i].presetName,
-            value: this.presetArray[i].presetToken });
+          if (this.callback) this.callback('clearpreset', {
+            name: this.presetArray[i].presetName,
+            value: this.presetArray[i].presetToken
+          });
           break;
         }
       }
@@ -231,16 +237,18 @@ class PTZService extends SoapService {
       if (presetToken) {
         for (var i = 0; i < this.presetArray.length; i++) {
           if (profileToken === this.presetArray[i]
-          && presetToken === this.presetArray[i]) {
+            && presetToken === this.presetArray[i]) {
             this.presetArray[i].presetName = presetName;
             this.presetArray[i].used = true;
-           if (this.callback) this.callback('setpreset', { name: presetName,
-            value: presetToken });
-          break;
+            if (this.callback) this.callback('setpreset', {
+              name: presetName,
+              value: presetToken
+            });
+            break;
           }
-        SetPresetResponse = { PresetToken : presetToken};
+          SetPresetResponse = { PresetToken: presetToken };
 
-        return SetPresetResponse;
+          return SetPresetResponse;
         }
       } else {
         // Check if the preset name is a number (special case)
@@ -253,25 +261,29 @@ class PTZService extends SoapService {
         } catch (err) {
         }
         if (special_case_name) {
-          if (this.callback) this.callback('setpreset', { name: presetName,
-              value: presetName });
-          SetPresetResponse = { PresetToken : presetName};
+          if (this.callback) this.callback('setpreset', {
+            name: presetName,
+            value: presetName
+          });
+          SetPresetResponse = { PresetToken: presetName };
           return SetPresetResponse;
         } else {
           // Find the first unused token and use it
           var new_presetToken = '';
           for (var i = 0; i < this.presetArray.length; i++) {
             if (profileToken === this.presetArray[i].profileToken
-            && this.presetArray[i].used == false) {
+              && this.presetArray[i].used == false) {
               this.presetArray[i].presetName = presetName;
               this.presetArray[i].used = true;
               new_presetToken = this.presetArray[i].presetToken;
-              if (this.callback) this.callback('setpreset', { name: presetName,
-                value: new_presetToken });
+              if (this.callback) this.callback('setpreset', {
+                name: presetName,
+                value: new_presetToken
+              });
               break;
             }
           }
-          SetPresetResponse = { PresetToken : new_presetToken};
+          SetPresetResponse = { PresetToken: new_presetToken };
           return SetPresetResponse;
         }
       }
@@ -280,16 +292,16 @@ class PTZService extends SoapService {
     port.SetConfiguration = args => {
       if (args.PTZConfiguration.attributes.token === config.attributes.token) {
         var SetConfigurationResponse = {};
-        config.DefaultPTZTimeout = args.PTZConfiguration.DefaultPTZTimeout; 
+        config.DefaultPTZTimeout = args.PTZConfiguration.DefaultPTZTimeout;
         return SetConfigurationResponse;
       } else {
         var NOT_IMPLEMENTED = {
           Fault: {
             Code: {
               Value: "soap:Sender",
-              Subcode: { 
+              Subcode: {
                 Value: "ter:InvalidArgVal",
-                Subcode: { 
+                Subcode: {
                   Value: "ter:NoEntity",
                 }
               }
@@ -299,15 +311,17 @@ class PTZService extends SoapService {
             }
           }
         };
-         throw NOT_IMPLEMENTED;
-      }     
+        throw NOT_IMPLEMENTED;
+      }
     };
 
     port.SendAuxiliaryCommand = args => {
       console.log(node.attributes.token, args.ProfileToken);
       if (args.ProfileToken === node.attributes.token) {
-        var SendAuxiliaryCommandResponse = {attributes: {
-          AuxiliaryResponse: "Done"}
+        var SendAuxiliaryCommandResponse = {
+          attributes: {
+            AuxiliaryResponse: "Done"
+          }
         };
         return SendAuxiliaryCommandResponse;
       } else {
@@ -315,9 +329,9 @@ class PTZService extends SoapService {
           Fault: {
             Code: {
               Value: "soap:Sender",
-              Subcode: { 
+              Subcode: {
                 Value: "ter:InvalidArgVal",
-                Subcode: { 
+                Subcode: {
                   Value: "ter:NoProfile",
                 }
               }
@@ -327,10 +341,18 @@ class PTZService extends SoapService {
             }
           }
         };
-         throw FAULT;
+        throw FAULT;
       }
     };
-    
+
+    port.AbsoluteMove = args => {
+      console.log("args are", args);
+    };
+
+    port.GetStatus = args => {
+      console.log("args are", args);
+    };
+
   }
 }
 export = PTZService;

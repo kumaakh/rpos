@@ -495,14 +495,36 @@ class PTZService extends SoapService {
     };
 
     port.SetConfiguration = args => {
-      var SetConfigurationResponse = {};
-      if (config.DefaultPTZTimeout === 'P0Y0M0DT1H') {
-        config.DefaultPTZTimeout = 'P0Y0M0DT0H5M';
+      if (args.PTZConfiguration.attributes.token == config.attributes.token) {
+        var SetConfigurationResponse = {};
+        if (config.DefaultPTZTimeout === 'P0Y0M0DT1H') {
+          config.DefaultPTZTimeout = 'P0Y0M0DT0H5M';
+        } else {
+          config.DefaultPTZTimeout = 'P0Y0M0DT1H';
+        }
+        return SetConfigurationResponse;
       } else {
-        config.DefaultPTZTimeout = 'P0Y0M0DT1H';
-      }
-      return SetConfigurationResponse;
+        var NOT_IMPLEMENTED = {
+          Fault: {
+            Code: {
+              Value: "soap:Sender",
+              Subcode: { 
+                Value: "ter:InvalidArgVal",
+                Subcode: { 
+                  Value: "ter:NoEntity",
+                }
+              }
+            },
+            Reason: {
+              Text: "Invalid Token"
+            }
+          }
+        };
+         throw NOT_IMPLEMENTED;
+      }     
     };
+
+    
   }
 }
 export = PTZService;

@@ -34,6 +34,7 @@ import DeviceService = require("./services/device_service");
 import MediaService = require("./services/media_service");
 import PTZService = require("./services/ptz_service");
 import DiscoveryService = require("./services/discovery_service");
+import PTZBase = require("./services/ptz_base");
 
 var utils = Utils.utils;
 let pjson = require("./package.json");
@@ -53,10 +54,12 @@ for (var i in config.DeviceInformation) {
 let webserver = express();
 let httpserver = http.createServer(webserver);
 
+let ptz_base = new PTZBase();
+
 let camera = new Camera(config, webserver);
 let device_service = new DeviceService(config, httpserver, ptz_callback);
 let media_service = new MediaService(config, httpserver, camera);
-let ptz_service = new PTZService(config, httpserver, ptz_callback);
+let ptz_service = new PTZService(config, httpserver, ptz_callback, ptz_base);
 // let discovery_service = new DiscoveryService(config);
 
 device_service.start();

@@ -345,12 +345,9 @@ class PTZService extends SoapService {
       }
     };
 
-    port.AbsoluteMove = args => {
-      console.log("args are", args);
-    };
-
     port.GetStatus = args => {
       console.log("args are", args);
+      return this.configs.ptzstatus;
     };
 
   }

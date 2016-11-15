@@ -45,7 +45,6 @@ class PTZService extends SoapService {
     var port = this.ptz_service.PTZService.PTZ;
 
 
-    // var config = json.ptzconfig;
     var node = this.configs.node;
     var config = this.configs.ptzconfig;
     var configOption = this.configs.ptzconfigOption;

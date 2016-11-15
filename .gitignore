@@ -206,3 +206,4 @@ lib/**/*.js
 lib/**/*.js.map
 services/*.js
 services/*.js.map
+rposConfig.json

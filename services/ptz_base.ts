@@ -244,34 +244,6 @@ class PTZBase {
       }
     };
 
-    this.ptzstatus = {
-      PTZStatus: {
-        Position: {
-          PanTilt: {
-            attributes: {
-              x: { xs: float },
-              y: { xs: float },
-              space: { xs: anyURI }
-            }
-          },
-          Zoom: {
-            attributes: {
-              x: { xs: float },
-              space: { xs: anyURI }
-            }
-          }
-        },
-        MoveStatus: {
-          PanTilt: { xs: string },
-          Zoom: { xs: string }
-        },
-        Error: { xs: string },
-        UtcTime: { xs: dateTime }
-      }
-    }
-
-
-
     var date = new Date();
 
     this.ptzstatus = {

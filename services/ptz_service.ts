@@ -350,11 +350,6 @@ class PTZService extends SoapService {
       return this.configs.ptzstatus;
     };
 
-    port.ContinuousMove = args => {
-        var ContinuousMoveResponse = { continuousMove };
-        return ContinuousMoveResponse;
-      };
-
   }
 }
 export = PTZService;

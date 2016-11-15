@@ -4,11 +4,11 @@
 import fs = require("fs");
 import util = require("util");
 import os = require('os');
-import ip = require('ip');
 import SoapService = require('../lib/SoapService');
 import { Utils }  from '../lib/utils';
 import { Server } from 'http';
 var utils = Utils.utils;
+var ip = require('ip');
 
 class DeviceService extends SoapService {
   device_service: any;

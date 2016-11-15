@@ -159,24 +159,6 @@ class PTZBase {
               //     Max : 1.0
               //   }
               // }],
-              ContinuousPanTiltVelocitySpace : [{ 
-                URI : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace',
-                XRange : { 
-                  Min : -1.0,
-                  Max : 1.0
-                },
-                YRange : { 
-                  Min : -1.0,
-                  Max : 1.0
-                }
-              }],
-              ContinuousZoomVelocitySpace : [{ 
-                URI : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace',
-                XRange : { 
-                  Min : 0.33,
-                  Max : 1.0
-                }
-              }],
               AbsolutePanTiltPositionSpace : [{ 
                 URI : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/PositionGenericSpace',
                 XRange : { 
@@ -190,6 +172,24 @@ class PTZBase {
               }],
               AbsoluteZoomPositionSpace : [{ 
                 URI : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/PositionGenericSpace',
+                XRange : { 
+                  Min : 0.33,
+                  Max : 1.0
+                }
+              }],
+              ContinuousPanTiltVelocitySpace : [{ 
+                URI : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace',
+                XRange : { 
+                  Min : -1.0,
+                  Max : 1.0
+                },
+                YRange : { 
+                  Min : -1.0,
+                  Max : 1.0
+                }
+              }],
+              ContinuousZoomVelocitySpace : [{ 
+                URI : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace',
                 XRange : { 
                   Min : 0.33,
                   Max : 1.0
@@ -236,28 +236,28 @@ class PTZBase {
           attributes: {
             x: 0.0,
             y: 0.0,
-            space: "http://www.onvif.org/ver10/schema"
+            space: 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/PositionGenericSpace'
           }
         },
         Zoom: {
           attributes: {
-            x: 0.0,
-            space: "http://www.onvif.org/ver10/schema"
+            x: 1.0,
+            space: 'http://www.onvif.org/ver10/tptz/ZoomSpaces/PositionGenericSpace'
           }
         }
       },
       Speed: {
         PanTilt: {
           attributes: {
-            x: 0.0,
-            y: 0.0,
-            space: "http://www.onvif.org/ver10/schema"
+            x: 0.05,
+            y: 0.05,
+            space: 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/PositionGenericSpace'
           }
         },
         Zoom: {
           attributes: {
-            x: 0.0,
-            space: "http://www.onvif.org/ver10/schema"
+            x: 0.07,
+            space: 'http://www.onvif.org/ver10/tptz/ZoomSpaces/PositionGenericSpace'
           }
         }
       }
@@ -277,7 +277,7 @@ class PTZBase {
           },
           Zoom: {
             attributes: {
-              x: 0.0,
+              x: 1.0,
               space: 'http://www.onvif.org/ver10/tptz/ZoomSpaces/PositionGenericSpace'
             }
           }

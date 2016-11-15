@@ -5,6 +5,7 @@ class PTZBase{
     ptzconfigOption:any;
     AbsoluteMove:any;
     ptzstatus:any;
+    ContinuousMove: any;
 
     constructor() {
 
@@ -27,6 +28,24 @@ class PTZBase{
         }],
         AbsoluteZoomPositionSpace : [{ 
           URI : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/PositionGenericSpace',
+          XRange : { 
+            Min : 0.33,
+            Max : 1.0
+          }
+        }],
+        ContinuousPanTiltVelocitySpace : [{ 
+          URI : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace',
+          XRange : { 
+            Min : -1.0,
+            Max : 1.0
+          },
+          YRange : { 
+            Min : -1.0,
+            Max : 1.0
+          }
+        }],
+        ContinuousZoomVelocitySpace : [{ 
+          URI : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace',
           XRange : { 
             Min : 0.33,
             Max : 1.0
@@ -61,8 +80,8 @@ class PTZBase{
             NodeToken : 'ptz_node_token_0',
             DefaultAbsolutePantTiltPositionSpace : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/PositionGenericSpace',
             DefaultAbsoluteZoomPositionSpace : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/PositionGenericSpace',
-            DefaultRelativePanTiltTranslationSpace : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/TranslationGenericSpace',
-            DefaultRelativeZoomTranslationSpace : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/TranslationGenericSpace',
+            // DefaultRelativePanTiltTranslationSpace : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/TranslationGenericSpace',
+            // DefaultRelativeZoomTranslationSpace : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/TranslationGenericSpace',
             DefaultContinuousPanTiltVelocitySpace : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace',
             DefaultContinuousZoomVelocitySpace : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace',
             DefaultPTZSpeed : { 
@@ -122,42 +141,42 @@ class PTZBase{
             //   PTZRamps : {tt:IntAttrList}
             // },
             Spaces : { 
-              // ContinuousPanTiltVelocitySpace : [{ 
-              //   URI : { xs:anyURI},
-              //   XRange : { 
-              //     Min : { xs:float},
-              //     Max : { xs:float}
-              //   },
-              //   YRange : { 
-              //     Min : { xs:float},
-              //     Max : { xs:float}
-              //   }
-              // }],
-              // ContinuousZoomVelocitySpace : [{ 
-              //   URI : { xs:anyURI},
-              //   XRange : { 
-              //     Min : { xs:float},
-              //     Max : { xs:float}
-              //   }
-              // }],
               // RelativePanTiltTranslationSpace : [{ 
-              //   URI : { xs:anyURI},
+              //   URI : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/TranslationGenericSpace',
               //   XRange : { 
-              //     Min : { xs:float},
-              //     Max : { xs:float}
+              //     Min : -1.0,
+              //     Max : 1.0
               //   },
               //   YRange : { 
-              //     Min : { xs:float},
-              //     Max : { xs:float}
+              //     Min : -1.0,
+              //     Max : 1.0
               //   }
               // }],
               // RelativeZoomTranslationSpace : [{ 
-              //   URI : { xs:anyURI},
+              //   URI : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/TranslationGenericSpace',
               //   XRange : { 
-              //     Min : { xs:float},
-              //     Max : { xs:float}
+              //     Min : 0.33,
+              //     Max : 1.0
               //   }
               // }],
+              ContinuousPanTiltVelocitySpace : [{ 
+                URI : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace',
+                XRange : { 
+                  Min : -1.0,
+                  Max : 1.0
+                },
+                YRange : { 
+                  Min : -1.0,
+                  Max : 1.0
+                }
+              }],
+              ContinuousZoomVelocitySpace : [{ 
+                URI : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace',
+                XRange : { 
+                  Min : 0.33,
+                  Max : 1.0
+                }
+              }],
               AbsolutePanTiltPositionSpace : [{ 
                 URI : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/PositionGenericSpace',
                 XRange : { 
@@ -243,30 +262,50 @@ class PTZBase{
           }
         }
       };
-      
+
+      this.ContinuousMove = { 
+        ProfileToken : 'token',
+        Velocity : { 
+          PanTilt : { 
+            attributes : {
+              x : 0.05,
+              y : 0.05,
+              space : 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace'
+            }
+          },
+          Zoom : { 
+            attributes : {
+              x : 0.07,
+              space : 'http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace'
+            }
+          }
+        },
+        Timeout : 'PT1M'
+      };
+
       this.ptzstatus = {
         PTZStatus : { 
             Position : { 
               PanTilt : { 
                 attributes : {
-                  x : {xs:float},
-                  y : {xs:float},
-                  space : {xs:anyURI}
+                  x : '',
+                  y : '',
+                  space : ''
                 }
               },
               Zoom : { 
                 attributes : {
-                  x : {xs:float},
-                  space : {xs:anyURI}
+                  x : '',
+                  space : ''
                 }
               }
             },
             MoveStatus : { 
-              PanTilt : { xs:string},
-              Zoom : { xs:string}
+              PanTilt : '',
+              Zoom : ''
             },
-            Error : { xs:string},
-            UtcTime : { xs:dateTime}
+            Error : '',
+            UtcTime : ''
           }
       }
     }

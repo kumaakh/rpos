@@ -48,6 +48,7 @@ class PTZService extends SoapService {
     var node = this.configs.node;
     var config = this.configs.ptzconfig;
     var configOption = this.configs.ptzconfigOption;
+    var continuousMove = this.configs.ContinuousMove;
 
     port.GetNode = (args) => {
       if (args.NodeToken == node.attributes.token) {
@@ -351,6 +352,11 @@ class PTZService extends SoapService {
     port.GetStatus = args => {
       console.log("args are", args);
     };
+
+    port.ContinuousMove = args => {
+        var ContinuousMoveResponse = { continuousMove };
+        return ContinuousMoveResponse;
+      };
 
   }
 }

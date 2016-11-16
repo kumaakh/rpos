@@ -316,7 +316,6 @@ class PTZService extends SoapService {
     };
 
     port.SendAuxiliaryCommand = args => {
-      console.log(node.attributes.token, args.ProfileToken);
       if (args.ProfileToken === node.attributes.token) {
         var SendAuxiliaryCommandResponse = {
           attributes: {
@@ -346,8 +345,35 @@ class PTZService extends SoapService {
     };
 
     port.GetStatus = args => {
-      console.log("args are", args);
       return this.configs.ptzstatus;
+    };
+
+    port.AbsoluteMove = args => {
+      this.configs.ptzstatus.PTZStatus.Position.PanTilt = args.Position.PanTilt;
+      var AbsoluteMoveResponse = {};
+      return AbsoluteMoveResponse;
+    };
+
+    port.RelativeMove = args => {
+      var req = args;
+      try {
+        if (req.Translation.PanTilt.attributes.x) {
+          this.configs.ptzstatus.PTZStatus.Position.PanTilt.attributes.x =
+            this.configs.ptzstatus.PTZStatus.Position.PanTilt.attributes.x + req.Translation.PanTilt.attributes.x;
+        }
+        if (req.Translation.PanTilt.attributes.y) {
+          this.configs.ptzstatus.PTZStatus.Position.PanTilt.attributes.y =
+            this.configs.ptzstatus.PTZStatus.Position.PanTilt.attributes.y + req.Translation.PanTilt.attributes.y;
+        }
+      } catch (e) { }
+      try {
+        if (req.Translation.Zoom.attributes.x) {
+          this.configs.ptzstatus.PTZStatus.Position.Zoom.attributes.x =
+            this.configs.ptzstatus.PTZStatus.Position.Zoom.attributes.x + req.Translation.Zoom.attributes.x;
+        }
+      } catch (e) { }
+      var RelativeMoveResponse = {};
+      return RelativeMoveResponse;
     };
 
   }

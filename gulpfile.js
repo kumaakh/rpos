@@ -6,9 +6,9 @@ var gulp = require('gulp'),
     typings = require('typings'),
     runSequence = require('run-sequence'),
     sourcemaps = require('gulp-sourcemaps'),
-    ip = require('ip');
+    //ip = require('ip');
 
-const spawn = require('child_process').spawn;
+spawn = require('child_process').spawn;
 
 var version = 'rpos-' + pkg.version;
 var releaseDir = 'release/' + version;

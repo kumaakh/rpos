@@ -44,11 +44,17 @@ class PTZService extends SoapService {
   extendService() {
     var port = this.ptz_service.PTZService.PTZ;
 
-
+    var capabilities = this.configs.capabilities;
     var node = this.configs.node;
     var config = this.configs.ptzconfig;
     var configOption = this.configs.ptzconfigOption;
     var continuousMove = this.configs.ContinuousMove;
+
+    port.GetServiceCapabilities = (args) => {
+      console.log("comes here?", capabilities);
+        var GetServiceCapabilitiesResponse = { Capabilities:capabilities };
+        return GetServiceCapabilitiesResponse;
+    };
 
     port.GetNode = (args) => {
       if (args.NodeToken == node.attributes.token) {

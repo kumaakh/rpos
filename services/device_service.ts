@@ -1,3 +1,5 @@
+import { runInThisContext } from 'vm';
+import { Reporter } from 'gulp-typescript/release/reporter';
 ///<reference path="../typings/main.d.ts" />
 ///<reference path="../rpos.d.ts" />
 
@@ -13,12 +15,16 @@ var ip = require('ip');
 class DeviceService extends SoapService {
   device_service: any;
   callback: any;
+  media_service: any;
+  ptz_service: any;
 
-  constructor(config: rposConfig, server: Server, callback) {
+  constructor(config: rposConfig, server: Server, callback, media_service, ptz_service) {
     super(config, server);
 
     this.device_service = require('./stubs/device_service.js').DeviceService;
     this.callback = callback;
+    this.media_service = media_service;
+    this.ptz_service = ptz_service;
 
     this.serviceOptions = {
       path: '/onvif/device_service',
@@ -91,6 +97,7 @@ class DeviceService extends SoapService {
     };
 
     port.GetCapabilities = (args /*, cb, headers*/) => {
+      console.log("came here", args);
       var category = args.Category;
       //{ 'All', 'Analytics', 'Device', 'Events', 'Imaging', 'Media', 'PTZ' }
       var GetCapabilitiesResponse = {
@@ -233,6 +240,143 @@ class DeviceService extends SoapService {
       return GetScopesResponse;
     };
 
+    port.GetServices = (args) => {
+
+    var GetServicesResponse = { 
+        Service : [
+        {
+          Namespace : "http://www.onvif.org/ver10/device/wsdl",
+          XAddr : `http://${utils.getIpAddress() }:${this.config.ServicePort}/onvif/device_service`,
+          Version : { 
+            Major : 1,
+            Minor : 11,
+          }
+        },
+        { 
+          Namespace : "http://www.onvif.org/ver10/media/wsdl",
+          XAddr : `http://${utils.getIpAddress() }:${this.config.ServicePort}/onvif/media_service`,
+          Version : { 
+            Major : 1,
+            Minor : 11,
+          }
+        },
+        { 
+          Namespace : "http://www.onvif.org/ver20/ptz/wsdl",
+          XAddr : `http://${utils.getIpAddress() }:${this.config.ServicePort}/onvif/ptz_service`,
+          Version : { 
+            Major : 1,
+            Minor : 11,
+          },
+        }]
+        };
+        
+    if (args.IncludeCapability) {
+      // var device = {
+      //     Network: {
+      //       attributes : {
+      //         IPFilter: false,
+      //         ZeroConfiguration: false,
+      //         IPVersion6: false,
+      //         DynDNS: false,
+      //         Extension : {
+      //         Dot11Configuration: false,
+      //         },
+      //       } 
+      //     },
+      //     Security: {
+      //       attributes: {
+      //         "TLS1.1": false,
+      //         "TLS1.2": false,
+      //         OnboardKeyGeneration: false,
+      //         AccessPolicyConfig: false,
+      //         "X.509Token": false,
+      //         SAMLToken: false,
+      //         KerberosToken: false,
+      //         RELToken: false,
+      //         Extension : {
+      //           "TLS1.0": false,
+      //           Extension : {
+      //             Dot1X: false,
+      //             RemoteUserHandling: false
+      //           }
+      //         }
+      //       }
+      //     },
+      //     System: {
+      //       attributes : {
+      //         DiscoveryResolve: false,
+      //         DiscoveryBye: false,
+      //         RemoteDiscovery: false,
+      //         SystemBackup: false,
+      //         SystemLogging: false,
+      //         FirmwareUpgrade: false,
+      //         SupportedVersions: {
+      //           Major: 1,
+      //           Minor: 11
+      //         },
+      //         Extension: {
+      //           HttpFirmwareUpgrade: false,
+      //           HttpSystemBackup: false,
+      //           HttpSystemLogging: false,
+      //           HttpSupportInformation: false,
+      //         },
+      //       }
+      //     },
+      //     IO: {
+      //       attributes : { 
+      //         InputConnectors: 0,
+      //         RelayOutputs: 1,
+      //         Extension: {
+      //           Auxiliary: false,
+      //           AuxiliaryCommands: "",
+      //         },
+      //       }
+      //     },
+      //   };
+      
+      // var media = {
+      //   Capabilities : {
+      //     attributes: {
+      //       SnapshotURI : true,
+      //       Rotation : ,
+      //       VideoSourceMode : ,
+      //       OSD : ,
+      //     },
+      //     ProfileCapabilities: {
+      //       attributes : {
+      //         MaximumNumberOfProfiles: 1,
+      //         ConfigurationsSupported: , 
+      //       }
+      //     },
+      //     StreamingCapabilities: {
+      //       attributes : {
+      //         RTPMulticast: this.config.MulticastEnabled,
+      //         RTP_TCP: true,
+      //         RTP_RTSP_TCP: true,
+      //         NonAggregateControl: false,
+      //       }
+
+      //   },
+
+      //   }
+      // };
+      
+      // var event = {};
+
+      // var ptz = {};
+      
+      GetServicesResponse.Service[0]['Capabilities'] = port.GetServiceCapabilities();
+      console.log("1 done");
+      GetServicesResponse.Service[1]['Capabilities'] = this.media_service.media_service.MediaService.Media.GetServiceCapabilities();
+      GetServicesResponse.Service[1]['Capabilities']['Capabilities']['attributes']['xmlns:trt'] = "http://www.onvif.org/ver10/media/wsdl";
+      console.log("2 done");
+      GetServicesResponse.Service[2]['Capabilities'] = this.ptz_service.ptz_service.PTZService.PTZ.GetServiceCapabilities();
+      GetServicesResponse.Service[2]['Capabilities']['Capabilities']['attributes']['xmlns:tptz'] = "http://www.onvif.org/ver10/ptz/wsdl";
+    } 
+        return GetServicesResponse;
+    }       
+
+
     port.GetServiceCapabilities = (args /*, cb, headers*/) => {
       var GetServiceCapabilitiesResponse = {
         Capabilities: {
@@ -286,11 +430,6 @@ class DeviceService extends SoapService {
               StorageConfiguration: false
             }
           },
-          //Misc : { 
-          //  attributes : {
-          //    AuxiliaryCommands : {tt:StringAttrList}
-          //  }
-          //}
         }
       };
       return GetServiceCapabilitiesResponse;

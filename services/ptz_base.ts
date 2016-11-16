@@ -6,8 +6,19 @@ class PTZBase {
   AbsoluteMove: any;
   ptzstatus: any;
   ContinuousMove: any;
-
+  capabilities: any;
+  
   constructor() {
+
+    this.capabilities = {
+        attributes : {
+        EFlip : false,
+        Reverse : false,
+        GetCompatibleConfigurations : true,
+        MoveStatus : true,
+        StatusPosition : true
+        }
+    };
 
     this.node = {
       attributes: {
@@ -70,14 +81,14 @@ class PTZBase {
           }
         }],
         PanTiltSpeedSpace: [{
-          URI: 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/GenericSpeedSpace',
+          URI: 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/PositionGenericSpace',
           XRange: {
             Min: 0.0,
             Max: 0.05
           }
         }],
         ZoomSpeedSpace: [{
-          URI: 'http://www.onvif.org/ver10/tptz/ZoomSpaces/ZoomGenericSpeedSpace',
+          URI: 'http://www.onvif.org/ver10/tptz/ZoomSpaces/PositionGenericSpace',
           XRange: {
             Min: 0.0,
             Max: 0.07
@@ -117,7 +128,7 @@ class PTZBase {
           }
         }
       },
-      DefaultPTZTimeout: 'P0Y0M0DT1H',
+      DefaultPTZTimeout: 'PT5S',
       PanTiltLimits: {
         Range: {
           URI: 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/PositionGenericSpace',

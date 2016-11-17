@@ -187,13 +187,13 @@ class MediaService extends SoapService {
           attributes: {
             x: 0.05,
             y: 0.05,
-            space: 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/PositionGenericSpace'
+            space: 'http://www.onvif.org/ver10/tptz/PanTiltSpaces/GenericSpeedSpace'
           }
         },
         Zoom: {
           attributes: {
             x: 0.07,
-            space: 'http://www.onvif.org/ver10/tptz/ZoomSpaces/PositionGenericSpace'
+            space: 'http://www.onvif.org/ver10/tptz/ZoomSpaces/ZoomGenericSpeedSpace'
           }
         }
       },

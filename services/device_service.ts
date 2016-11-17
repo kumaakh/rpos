@@ -97,7 +97,6 @@ class DeviceService extends SoapService {
     };
 
     port.GetCapabilities = (args /*, cb, headers*/) => {
-      console.log("came here", args);
       var category = args.Category;
       //{ 'All', 'Analytics', 'Device', 'Events', 'Imaging', 'Media', 'PTZ' }
       var GetCapabilitiesResponse = {
@@ -271,107 +270,15 @@ class DeviceService extends SoapService {
         };
         
     if (args.IncludeCapability) {
-      // var device = {
-      //     Network: {
-      //       attributes : {
-      //         IPFilter: false,
-      //         ZeroConfiguration: false,
-      //         IPVersion6: false,
-      //         DynDNS: false,
-      //         Extension : {
-      //         Dot11Configuration: false,
-      //         },
-      //       } 
-      //     },
-      //     Security: {
-      //       attributes: {
-      //         "TLS1.1": false,
-      //         "TLS1.2": false,
-      //         OnboardKeyGeneration: false,
-      //         AccessPolicyConfig: false,
-      //         "X.509Token": false,
-      //         SAMLToken: false,
-      //         KerberosToken: false,
-      //         RELToken: false,
-      //         Extension : {
-      //           "TLS1.0": false,
-      //           Extension : {
-      //             Dot1X: false,
-      //             RemoteUserHandling: false
-      //           }
-      //         }
-      //       }
-      //     },
-      //     System: {
-      //       attributes : {
-      //         DiscoveryResolve: false,
-      //         DiscoveryBye: false,
-      //         RemoteDiscovery: false,
-      //         SystemBackup: false,
-      //         SystemLogging: false,
-      //         FirmwareUpgrade: false,
-      //         SupportedVersions: {
-      //           Major: 1,
-      //           Minor: 11
-      //         },
-      //         Extension: {
-      //           HttpFirmwareUpgrade: false,
-      //           HttpSystemBackup: false,
-      //           HttpSystemLogging: false,
-      //           HttpSupportInformation: false,
-      //         },
-      //       }
-      //     },
-      //     IO: {
-      //       attributes : { 
-      //         InputConnectors: 0,
-      //         RelayOutputs: 1,
-      //         Extension: {
-      //           Auxiliary: false,
-      //           AuxiliaryCommands: "",
-      //         },
-      //       }
-      //     },
-      //   };
-      
-      // var media = {
-      //   Capabilities : {
-      //     attributes: {
-      //       SnapshotURI : true,
-      //       Rotation : ,
-      //       VideoSourceMode : ,
-      //       OSD : ,
-      //     },
-      //     ProfileCapabilities: {
-      //       attributes : {
-      //         MaximumNumberOfProfiles: 1,
-      //         ConfigurationsSupported: , 
-      //       }
-      //     },
-      //     StreamingCapabilities: {
-      //       attributes : {
-      //         RTPMulticast: this.config.MulticastEnabled,
-      //         RTP_TCP: true,
-      //         RTP_RTSP_TCP: true,
-      //         NonAggregateControl: false,
-      //       }
-
-      //   },
-
-      //   }
-      // };
-      
-      // var event = {};
-
-      // var ptz = {};
       
       GetServicesResponse.Service[0]['Capabilities'] = port.GetServiceCapabilities();
       console.log("1 done");
       GetServicesResponse.Service[1]['Capabilities'] = this.media_service.media_service.MediaService.Media.GetServiceCapabilities();
-      GetServicesResponse.Service[1]['Capabilities']['Capabilities']['attributes']['xmlns:trt'] = "http://www.onvif.org/ver10/media/wsdl";
+      // GetServicesResponse.Service[1]['Capabilities']['Capabilities']['attributes']['namespace'] = "xmlns:trt";
+      // GetServicesResponse.Service[1]['Capabilities']['Capabilities']['attributes']['targetNamespace'] = "http://www.onvif.org/ver10/media/wsdl";
       console.log("2 done");
       GetServicesResponse.Service[2]['Capabilities'] = this.ptz_service.ptz_service.PTZService.PTZ.GetServiceCapabilities();
-      GetServicesResponse.Service[2]['Capabilities']['Capabilities']['attributes']['xmlns:tptz'] = "http://www.onvif.org/ver10/ptz/wsdl";
+      // GetServicesResponse.Service[2]['Capabilities']['Capabilities']['attributes']['namespace'] = "http://www.onvif.org/ver10/ptz/wsdl";
     } 
         return GetServicesResponse;
     }       

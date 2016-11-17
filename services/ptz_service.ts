@@ -51,7 +51,6 @@ class PTZService extends SoapService {
     var continuousMove = this.configs.ContinuousMove;
 
     port.GetServiceCapabilities = (args) => {
-      console.log("comes here?", capabilities);
         var GetServiceCapabilitiesResponse = { Capabilities:capabilities };
         return GetServiceCapabilitiesResponse;
     };

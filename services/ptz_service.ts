@@ -122,9 +122,27 @@ class PTZService extends SoapService {
 
 
     port.SetHomePosition = (args) => {
-      if (this.callback) this.callback('sethome', {});
-      var SetHomePositionResponse = {};
-      return SetHomePositionResponse;
+      // if (this.callback) this.callback('sethome', {});
+      // var SetHomePositionResponse = {};
+      // return SetHomePositionResponse;
+
+      var OVERWRITE_ERROR = {
+          Fault: {
+            Code: {
+              Value: "soap:Receiver",
+              Subcode: {
+                Value: "ter:Action",
+                Subcode: {
+                  Value: "ter:CannotOverwriteHome",
+                }
+              }
+            },
+            Reason: {
+              Text: "CannotOverwriteHome"
+            }
+          }
+        };
+        throw OVERWRITE_ERROR;
     };
 
     port.GotoHomePosition = (args) => {

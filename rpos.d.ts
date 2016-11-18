@@ -11,6 +11,8 @@ interface rposConfig {
   MulticastAddress: string;
   MulticastPort: number;
   PTZDriver: string;
+  PTZAddress: string;
+  PTZPort: number;
   PTZSerialPort: string;
   PTZSerialPortSettings: PTZSerialPortSettings;
   PTZCameraAddress: number;

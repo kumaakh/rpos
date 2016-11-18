@@ -36,6 +36,8 @@ import PTZService = require("./services/ptz_service");
 import DiscoveryService = require("./services/discovery_service");
 import PTZBase = require("./services/ptz_base");
 
+var WebSocket = require('ws');
+
 var utils = Utils.utils;
 let pjson = require("./package.json");
 let config = <rposConfig>require("./rposConfig.json");
@@ -60,13 +62,24 @@ let camera = new Camera(config, webserver);
 let media_service = new MediaService(config, httpserver, camera);
 let ptz_service = new PTZService(config, httpserver, ptz_callback, ptz_base);
 let device_service = new DeviceService(config, httpserver, ptz_callback, media_service, ptz_service);
-
+let socketConn = new WebSocket("ws://"+config.PTZAddress+":"+config.PTZPort+"/ws");
 // let discovery_service = new DiscoveryService(config);
 
 device_service.start();
 media_service.start();
 ptz_service.start();
 //discovery_service.start();
+
+var ptzCommand = {
+        "CMD": "P",
+        "AT": 0,
+        "VALUE": {
+            "p": 0,
+            "t": 0,
+            "z": 1,
+            "id": "vptz_1"
+        }
+    };
 
 
 //
@@ -235,5 +248,71 @@ function ptz_callback(command: string, data: any) {
 
       pelcod.send();
     }
+  }
+  if (command==='ptz') {
+    console.log("PTZ "+ data.pan + ' ' + data.tilt + ' ' + data.zoom);
+    var p=0.0;
+    var t=0.0;
+    var z=0.0;
+    try {p = parseFloat(data.pan)} catch (err) {}
+    try {t = parseFloat(data.tilt)} catch (err) {}
+    try {z = parseFloat(data.zoom)} catch (err) {}
+    if (tenx) {
+      if      (p < -0.1 && t >  0.1) tenx.upleft();
+      else if (p >  0.1 && t >  0.1) tenx.upright();
+      else if (p < -0.1 && t < -0.1) tenx.downleft();
+      else if (p >  0.1 && t < -0.1) tenx.downright();
+      else if (p >  0.1) tenx.right();
+      else if (p < -0.1) tenx.left();
+      else if (t >  0.1) tenx.up();
+      else if (t < -0.1) tenx.down()
+      else tenx.stop();
+    }
+    if (pelcod) {
+      pelcod.up(false).down(false).left(false).right(false);
+      if      (p < 0 && t > 0) pelcod.up(true).left(true);
+      else if (p > 0 && t > 0) pelcod.up(true).right(true);
+      else if (p < 0 && t < 0) pelcod.down(true).left(true);
+      else if (p > 0 && t < 0) pelcod.down(true).right(true);
+      else if (p > 0) pelcod.right(true);
+      else if (p < 0) pelcod.left(true);
+      else if (t > 0) pelcod.up(true);
+      else if (t < 0) pelcod.down(true);
+
+      // Set Pan/Tilt speed
+      // scale speeds from 0..1 to 0..63
+      var pan_speed = Math.round(Math.abs(p) * 63.0 );
+      var tilt_speed = Math.round(Math.abs(t) * 63.0 );
+
+      pelcod.setPanSpeed(pan_speed);
+      pelcod.setTiltSpeed(tilt_speed);
+
+
+      pelcod.zoomIn(false).zoomOut(false);
+      if (z>0) pelcod.zoomIn(true);
+      if (z<0) pelcod.zoomOut(true);
+
+      // Set Zoom speed
+      // scale speeds from 0..1 to 0 (slow), 1 (low med), 2 (high med), 3 (fast)
+      var abs_z = Math.abs(z);
+      var zoom_speed = 0;
+      if (abs_z > 0.75) zoom_speed = 3;
+      else if (abs_z > 0.5) zoom_speed = 2;
+      else if (abs_z > 0.25) zoom_speed = 1;
+      else zoom_speed = 0;
+
+      // sendSetZoomSpeed is not in node-pelcod yet so wrap with try/catch
+      try {
+        if (z != 0) pelcod.sendSetZoomSpeed(zoom_speed);
+      } catch (err) {}
+
+      pelcod.send();
+    }
+  }
+  if (command==='ptzabsolute') {
+    ptzCommand.VALUE.p = parseFloat(data.PTZStatus.Position.PanTilt.attributes.x);
+    ptzCommand.VALUE.t = parseFloat(data.PTZStatus.Position.PanTilt.attributes.y);
+    ptzCommand.VALUE.z = parseFloat(data.PTZStatus.Position.Zoom.attributes.x);
+    socketConn.send(JSON.stringify(ptzCommand));
   }
 }

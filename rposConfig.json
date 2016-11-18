@@ -1,6 +1,6 @@
 ﻿{
     "NetworkAdapters": ["Ethernet"],
-    "IpAddress": "10.40.10.150",
+    "IpAddress": "10.40.10.53",
     "ServicePort": 8085,
     "RTSPPort": 5544,
     "RTSPName": "vod/leman.mp4",
@@ -11,6 +11,8 @@
     "RTSPServer": 1,
     "RtspServerComment": "## Select RTSP Server > 1:RPOS RTSP Server 2:V4L2 RTSP Server by mpromonet (auto selected if MulticastEnabled=true)",
     "PTZDriver": "none",
+    "PTZAddress": "10.40.10.53",
+    "PTZPort": 8086,
     "PTZDriverComment": "## valid values are none,tenx and pelcod",
     "PTZSerialPort": "/dev/ttyUSB0",
     "PTZSerialPortSettings": { "baudRate": 2400, "dataBits": 8, "parity": "none", "stopBits": 1 },

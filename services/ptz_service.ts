@@ -354,7 +354,14 @@ class PTZService extends SoapService {
     };
 
     port.AbsoluteMove = args => {
-      this.configs.ptzstatus.PTZStatus.Position.PanTilt = args.Position.PanTilt;
+      if (args.Position['PanTilt']) {
+        this.configs.ptzstatus.PTZStatus.Position.PanTilt = args.Position.PanTilt;
+      } else if (args.Position['Zoom']) {
+        this.configs.ptzstatus.PTZStatus.Position.Zoom = args.Position.Zoom;
+      } else {
+        utils.log.warn("No pantilt/zoom values obtained.");
+      }
+      if (this.callback) this.callback('ptzabsolute', this.configs.ptzstatus);
       var AbsoluteMoveResponse = {};
       return AbsoluteMoveResponse;
     };

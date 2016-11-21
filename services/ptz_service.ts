@@ -15,6 +15,7 @@ class PTZService extends SoapService {
   ptz_service: any;
   callback: any;
   configs: any;
+  delay: any;
 
   presetArray = [];
 
@@ -49,10 +50,20 @@ class PTZService extends SoapService {
     var config = this.configs.ptzconfig;
     var configOption = this.configs.ptzconfigOption;
     var continuousMove = this.configs.ContinuousMove;
+    var AbsoluteMove = this.configs.AbsoluteMove;
+
+    function sleep(milliseconds) {
+      var start = new Date().getTime();
+      for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds) {
+          break;
+        }
+      }
+    }
 
     port.GetServiceCapabilities = (args) => {
-        var GetServiceCapabilitiesResponse = { Capabilities:capabilities };
-        return GetServiceCapabilitiesResponse;
+      var GetServiceCapabilitiesResponse = { Capabilities: capabilities };
+      return GetServiceCapabilitiesResponse;
     };
 
     port.GetNode = (args) => {
@@ -97,6 +108,7 @@ class PTZService extends SoapService {
 
     port.GetConfigurationOptions = (args) => {
       if (args.ConfigurationToken == config.attributes.token) {
+        // console.log(this.configs.ptzstatus.PTZStatus.MoveStatus);
         var GetConfigurationOptionsResponse = { PTZConfigurationOptions: configOption };
         return GetConfigurationOptionsResponse;
       } else {
@@ -122,11 +134,17 @@ class PTZService extends SoapService {
 
 
     port.SetHomePosition = (args) => {
-      // if (this.callback) this.callback('sethome', {});
-      // var SetHomePositionResponse = {};
-      // return SetHomePositionResponse;
 
-      var OVERWRITE_ERROR = {
+      // console.log(args, this.configs.ptzstatus.PTZStatus.MoveStatus);
+
+      if (this.configs.ptzstatus.PTZStatus.MoveStatus.PanTilt !== 'MOVING') {
+        // if (this.callback) this.callback('sethome', {});
+        // var SetHomePositionResponse = {};
+        // return SetHomePositionResponse;
+        var SetHomePositionResponse = {};
+        return SetHomePositionResponse;
+      } else {
+        var OVERWRITE_ERROR = {
           Fault: {
             Code: {
               Value: "soap:Receiver",
@@ -143,7 +161,8 @@ class PTZService extends SoapService {
           }
         };
         throw OVERWRITE_ERROR;
-    };
+      };
+    }
 
     port.GotoHomePosition = (args) => {
       if (this.callback) this.callback('gotohome', {});
@@ -313,7 +332,8 @@ class PTZService extends SoapService {
     };
 
     port.SetConfiguration = args => {
-      if (args.PTZConfiguration.attributes.token === config.attributes.token) {
+      // console.log(args, config);
+      if (this.configs.ptzstatus.PTZStatus.MoveStatus !== 'UNKNOWN' && args.PTZConfiguration.NodeToken === config.NodeToken) {
         var SetConfigurationResponse = {};
         config.DefaultPTZTimeout = args.PTZConfiguration.DefaultPTZTimeout;
         return SetConfigurationResponse;
@@ -325,7 +345,7 @@ class PTZService extends SoapService {
               Subcode: {
                 Value: "ter:InvalidArgVal",
                 Subcode: {
-                  Value: "ter:NoEntity",
+                  Value: "ter:NoConfig",
                 }
               }
             },
@@ -371,15 +391,85 @@ class PTZService extends SoapService {
       return this.configs.ptzstatus;
     };
 
+    this.delay = args => {
+      console.log("forths");
+      this.configs.ptzstatus.PTZStatus.MoveStatus.PanTilt = 'IDLE';
+    }
+
     port.AbsoluteMove = args => {
+      console.log("args", args.Position);
       if (args.Position['PanTilt']) {
-        this.configs.ptzstatus.PTZStatus.Position.PanTilt = args.Position.PanTilt;
+        if (args.Position.PanTilt.attributes.x <= config.PanTiltLimits.Range.XRange.Max && args.Position.PanTilt.attributes.x >= config.PanTiltLimits.Range.XRange.Min &&
+          args.Position.PanTilt.attributes.y <= config.PanTiltLimits.Range.XRange.Max && args.Position.PanTilt.attributes.y >= config.PanTiltLimits.Range.XRange.Min) {
+          this.configs.ptzstatus.PTZStatus.Position.PanTilt = args.Position.PanTilt;
+        } else {
+          var FAULT = {
+            Fault: {
+              Code: {
+                Value: "soap:Sender",
+                Subcode: {
+                  Value: "ter:InvalidArgVal",
+                  Subcode: {
+                    Value: "ter:InvalidPosition",
+                  }
+                }
+              },
+              Reason: {
+                Text: "Invalid Position"
+              }
+            }
+          };
+          throw FAULT;
+        }
       } else if (args.Position['Zoom']) {
-        this.configs.ptzstatus.PTZStatus.Position.Zoom = args.Position.Zoom;
+        if (args.Position.Zoom.attributes.x <= config.ZoomLimits.Range.XRange.Max && args.Position.Zoom.attributes.x >= config.ZoomLimits.Range.XRange.Min) {
+          this.configs.ptzstatus.PTZStatus.Position.Zoom = args.Position.Zoom;
+        } else {
+          var FAULT = {
+            Fault: {
+              Code: {
+                Value: "soap:Sender",
+                Subcode: {
+                  Value: "ter:InvalidArgVal",
+                  Subcode: {
+                    Value: "ter:InvalidPosition",
+                  }
+                }
+              },
+              Reason: {
+                Text: "Invalid Position"
+              }
+            }
+          };
+          throw FAULT;
+        }
       } else {
         utils.log.warn("No pantilt/zoom values obtained.");
+        var FAULT = {
+          Fault: {
+            Code: {
+              Value: "soap:Sender",
+              Subcode: {
+                Value: "ter:InvalidArgVal",
+                Subcode: {
+                  Value: "ter:InvalidPosition",
+                }
+              }
+            },
+            Reason: {
+              Text: "Invalid Position"
+            }
+          }
+        };
+        throw FAULT;
       }
-      if (this.callback) this.callback('ptzabsolute', this.configs.ptzstatus);
+      if (this.callback) {
+        this.configs.ptzstatus.PTZStatus.MoveStatus.PanTilt = 'MOVING';
+        // this.callback('ptzabsolute', this.configs.ptzstatus);
+        // this.configs.ptzstatus.PTZStatus.MoveStatus = 'IDLE';
+      }
+      setTimeout(this.delay, 5000);
+      console.log("third");
       var AbsoluteMoveResponse = {};
       return AbsoluteMoveResponse;
     };
@@ -405,7 +495,9 @@ class PTZService extends SoapService {
       var RelativeMoveResponse = {};
       return RelativeMoveResponse;
     };
-
   }
+
 }
+
+
 export = PTZService;
